@@ -5,9 +5,9 @@ using System.Text;
 
 namespace AspNetCoreIdentityExample.Domain.Repositories
 {
-    public interface IUserClaimRepository : IRepository<UserClaim>
+    public interface IUserClaimRepository : IRepository<UserClaim, int>
     {
-        IEnumerable<UserClaim> GetByUser(User user);
+        IEnumerable<UserClaim> GetByUserId(string userId);
         IEnumerable<User> GetUsersForClaim(string claimType, string claimValue);
     }
 }

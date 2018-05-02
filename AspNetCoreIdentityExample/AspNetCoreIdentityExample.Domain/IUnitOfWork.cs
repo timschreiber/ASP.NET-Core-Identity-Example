@@ -1,8 +1,6 @@
 ﻿using AspNetCoreIdentityExample.Domain.Entities;
 using AspNetCoreIdentityExample.Domain.Repositories;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AspNetCoreIdentityExample.Domain
 {
@@ -13,11 +11,9 @@ namespace AspNetCoreIdentityExample.Domain
         IUserRepository UserRepository { get; }
         IUserClaimRepository UserClaimRepository { get; }
         IUserLoginRepository UserLoginRepository { get; }
-        IRepository<UserToken> UserTokenRepository { get; }
+        IRepository<UserToken, UserTokenKey> UserTokenRepository { get; }
         IUserRoleRepository UserRoleRepository { get; }
 
         void Commit();
-        Task CommitAsync();
-        Task CommitAsync(CancellationToken cancellationToken);
     }
 }

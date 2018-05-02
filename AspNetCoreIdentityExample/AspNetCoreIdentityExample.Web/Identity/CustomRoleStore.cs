@@ -55,9 +55,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
                 if (role == null)
                     throw new ArgumentNullException(nameof(role));
 
-                var roleEntity = getRoleEntity(role);
-
-                _unitOfWork.RoleRepository.Remove(roleEntity);
+                _unitOfWork.RoleRepository.Remove(role.Id);
                 _unitOfWork.Commit();
 
                 return Task.FromResult(IdentityResult.Success);
@@ -76,15 +74,11 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(roleId))
                 throw new ArgumentNullException(nameof(roleId));
 
-            if(Guid.TryParse(roleId, out Guid id))
-            {
-                var roleEntity = _unitOfWork.RoleRepository.Find(id.ToString());
-                return Task.FromResult(getIdentityRole(roleEntity));
-            }
-            else
-            {
+            if(!Guid.TryParse(roleId, out Guid id))
                 throw new ArgumentOutOfRangeException(nameof(roleId), $"{nameof(roleId)} is not a valid GUID");
-            }
+
+            var roleEntity = _unitOfWork.RoleRepository.Find(id.ToString());
+            return Task.FromResult(getIdentityRole(roleEntity));
         }
 
         public Task<CustomIdentityRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
@@ -196,9 +190,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (role == null)
                 throw new ArgumentNullException(nameof(role));
 
-            var roleEntity = getRoleEntity(role);
-
-            IList<Claim> result = _unitOfWork.RoleClaimRepository.GetByRole(roleEntity).Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList();
+            IList<Claim> result = _unitOfWork.RoleClaimRepository.FindByRoleId(role.Id).Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList();
 
             return Task.FromResult(result);
         }
@@ -238,15 +230,14 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (claim == null)
                 throw new ArgumentNullException(nameof(claim));
 
-            var roleClaimEntity = new RoleClaim
-            {
-                ClaimType = claim.Type,
-                ClaimValue = claim.Value,
-                RoleId = role.Id
-            };
+            var roleClaimEntity = _unitOfWork.RoleClaimRepository.FindByRoleId(role.Id)
+                .SingleOrDefault(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
 
-            _unitOfWork.RoleClaimRepository.Remove(roleClaimEntity);
-            _unitOfWork.Commit();
+            if(roleClaimEntity != null)
+            {
+                _unitOfWork.RoleClaimRepository.Remove(roleClaimEntity.Id);
+                _unitOfWork.Commit();
+            }
 
             return Task.CompletedTask;
         }

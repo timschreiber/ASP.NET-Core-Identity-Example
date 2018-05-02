@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace AspNetCoreIdentityExample.Domain.Repositories
 {
-    public interface IRoleClaimRepository : IRepository<RoleClaim>
+    public interface IRoleClaimRepository : IRepository<RoleClaim, int>
     {
-        IEnumerable<RoleClaim> GetByRole(Role role);
+        IEnumerable<RoleClaim> FindByRoleId(string roleId);
     }
 }

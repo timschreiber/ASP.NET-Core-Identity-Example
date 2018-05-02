@@ -5,12 +5,8 @@ using System.Threading.Tasks;
 
 namespace AspNetCoreIdentityExample.Domain.Repositories
 {
-    public interface IUserLoginRepository : IRepository<UserLogin>
+    public interface IUserLoginRepository : IRepository<UserLogin, UserLoginKey>
     {
-        UserLogin GetByProviderAndKey(string loginProvider, string providerKey);
-        Task<UserLogin> GetByProviderAndKeyAsync(string loginProvier, string providerKey);
-        Task<UserLogin> GetByProviderAndKeyAsync(CancellationToken cancellationToken, string loginProvider, string providerKey);
-
-        IEnumerable<UserLogin> GetByUserId(string userId);
+        IEnumerable<UserLogin> FindByUserId(string userId);
     }
 }

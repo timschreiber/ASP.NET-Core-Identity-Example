@@ -7,9 +7,9 @@ namespace AspNetCoreIdentityExample.Domain.Repositories
 {
     public interface IUserRoleRepository
     {
-        void Add(User user, Role role);
-        void Remove(User user, Role role);
-        IEnumerable<Role> GetRolesByUser(User user);
-        IEnumerable<User> GetUsersByRole(Role role);
+        void Add(string UserId, string roleName);
+        void Remove(string userId, string roleName);
+        IEnumerable<string> GetRoleNamesByUserId(string userId);
+        IEnumerable<User> GetUsersByRoleName(string roleName);
     }
 }

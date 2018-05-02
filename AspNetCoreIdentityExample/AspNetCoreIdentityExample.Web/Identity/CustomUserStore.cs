@@ -36,7 +36,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
         {
             get
             {
-                return _unitOfWork.UserRepository.GetAll()
+                return _unitOfWork.UserRepository.All()
                     .Select(x => getIdentityUser(x))
                     .AsQueryable();
             }
@@ -54,9 +54,9 @@ namespace AspNetCoreIdentityExample.Web.Identity
                 if (user == null)
                     throw new ArgumentNullException(nameof(user));
 
-                var entity = getUserEntity(user);
+                var userEntity = getUserEntity(user);
 
-                _unitOfWork.UserRepository.Add(entity);
+                _unitOfWork.UserRepository.Add(userEntity);
                 _unitOfWork.Commit();
 
                 return Task.FromResult(IdentityResult.Success);
@@ -77,9 +77,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
                 if (user == null)
                     throw new ArgumentNullException(nameof(user));
 
-                var entity = getUserEntity(user);
-
-                _unitOfWork.UserRepository.Remove(entity);
+                _unitOfWork.UserRepository.Remove(user.Id);
                 _unitOfWork.Commit();
 
                 return Task.FromResult(IdentityResult.Success);
@@ -95,15 +93,15 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
 
-            if(Guid.TryParse(userId, out Guid id))
-            {
-                var userEntity = _unitOfWork.UserRepository.Find(id);
-                return Task.FromResult(getIdentityUser(userEntity));
-            }
-            else
-            {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentNullException(nameof(userId));
+
+            if (!Guid.TryParse(userId, out Guid id))
                 throw new ArgumentOutOfRangeException(nameof(userId), $"{nameof(userId)} is not a valid GUID");
-            }
+
+            var userEntity = _unitOfWork.UserRepository.Find(id.ToString());
+
+            return Task.FromResult(getIdentityUser(userEntity));
         }
 
         public Task<CustomIdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
@@ -111,10 +109,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
 
-            if (string.IsNullOrWhiteSpace(normalizedUserName))
-                throw new ArgumentNullException(nameof(normalizedUserName));
+            var userEntity = _unitOfWork.UserRepository.FindByNormalizedUserName(normalizedUserName);
 
-            var userEntity = _unitOfWork.UserRepository.FindByUserName(normalizedUserName);
             return Task.FromResult(getIdentityUser(userEntity));
         }
 
@@ -159,9 +155,6 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (string.IsNullOrWhiteSpace(normalizedName))
-                throw new ArgumentNullException(nameof(normalizedName));
-
             user.NormalizedUserName = normalizedName;
 
             return Task.CompletedTask;
@@ -174,9 +167,6 @@ namespace AspNetCoreIdentityExample.Web.Identity
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
-
-            if (string.IsNullOrWhiteSpace(userName))
-                throw new ArgumentNullException(nameof(userName));
 
             user.UserName = userName;
 
@@ -221,9 +211,6 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (string.IsNullOrWhiteSpace(passwordHash))
-                throw new ArgumentNullException(nameof(passwordHash));
-
             user.PasswordHash = passwordHash;
 
             return Task.CompletedTask;
@@ -260,9 +247,6 @@ namespace AspNetCoreIdentityExample.Web.Identity
 
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
-
-            if (string.IsNullOrWhiteSpace(email))
-                throw new ArgumentNullException(nameof(email));
 
             user.Email = email;
 
@@ -309,7 +293,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(normalizedEmail))
                 throw new ArgumentNullException(nameof(normalizedEmail));
 
-            var userEntity = _unitOfWork.UserRepository.FindByEmail(normalizedEmail);
+            var userEntity = _unitOfWork.UserRepository.FindByNormalizedEmail(normalizedEmail);
 
             return Task.FromResult(getIdentityUser(userEntity));
         }
@@ -333,9 +317,6 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (string.IsNullOrWhiteSpace(normalizedEmail))
-                throw new ArgumentNullException(nameof(normalizedEmail));
-
             user.NormalizedEmail = normalizedEmail;
 
             return Task.CompletedTask;
@@ -353,6 +334,12 @@ namespace AspNetCoreIdentityExample.Web.Identity
 
             if (login == null)
                 throw new ArgumentNullException(nameof(login));
+
+            if (string.IsNullOrWhiteSpace(login.LoginProvider))
+                throw new ArgumentNullException(nameof(login.LoginProvider));
+
+            if (string.IsNullOrWhiteSpace(login.ProviderKey))
+                throw new ArgumentNullException(nameof(login.ProviderKey));
 
             var loginEntity = new UserLogin
             {
@@ -382,13 +369,9 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(providerKey))
                 throw new ArgumentNullException(nameof(providerKey));
 
-            var loginEntity = _unitOfWork.UserLoginRepository.Find(new { LoginProvider = loginProvider, ProviderKey = providerKey });
-            if(loginEntity != null)
-            {
-                _unitOfWork.UserLoginRepository.Remove(loginEntity);
-                _unitOfWork.Commit();
-            }
-
+            _unitOfWork.UserLoginRepository.Remove(new UserLoginKey { LoginProvider = loginProvider, ProviderKey = providerKey });
+            _unitOfWork.Commit();
+            
             return Task.CompletedTask;
         }
 
@@ -400,7 +383,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            IList<UserLoginInfo> result = _unitOfWork.UserLoginRepository.GetByUserId(user.Id)
+            IList<UserLoginInfo> result = _unitOfWork.UserLoginRepository.FindByUserId(user.Id)
                 .Select(x => new UserLoginInfo(x.LoginProvider, x.ProviderKey, x.ProviderDisplayName))
                 .ToList();
 
@@ -418,7 +401,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(providerKey))
                 throw new ArgumentNullException(nameof(providerKey));
 
-            var loginEntity = _unitOfWork.UserLoginRepository.GetByProviderAndKey(loginProvider, providerKey);
+            var loginEntity = _unitOfWork.UserLoginRepository.Find(new UserLoginKey { LoginProvider = loginProvider, ProviderKey = providerKey });
             if (loginEntity == null)
                 return Task.FromResult(default(CustomIdentityUser));
 
@@ -440,14 +423,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
 
-            var userEntity = getUserEntity(user);
-            var roleEntity = _unitOfWork.RoleRepository.FindByName(roleName);
-
-            if(roleEntity != null)
-            {
-                _unitOfWork.UserRoleRepository.Add(userEntity, roleEntity);
-                _unitOfWork.Commit();
-            }
+            _unitOfWork.UserRoleRepository.Add(user.Id, roleName);
+            _unitOfWork.Commit();
 
             return Task.CompletedTask;
         }
@@ -463,14 +440,9 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
 
-            var userEntity = getUserEntity(user);
-            var roleEntity = _unitOfWork.RoleRepository.FindByName(roleName);
+            _unitOfWork.UserRoleRepository.Remove(user.Id, roleName);
 
-            if (roleEntity != null)
-            {
-                _unitOfWork.UserRoleRepository.Remove(userEntity, roleEntity);
-                _unitOfWork.Commit();
-            }
+            _unitOfWork.Commit();
 
             return Task.CompletedTask;
         }
@@ -483,10 +455,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var userEntity = getUserEntity(user);
-
-            IList<string> result = _unitOfWork.UserRoleRepository.GetRolesByUser(userEntity)
-                .Select(x => x.Name)
+            IList<string> result = _unitOfWork.UserRoleRepository.GetRoleNamesByUserId(user.Id)
                 .ToList();
 
             return Task.FromResult(result);
@@ -503,9 +472,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
 
-            var userEntity = getUserEntity(user);
+            var result = _unitOfWork.UserRoleRepository.GetRoleNamesByUserId(user.Id).Any(x => x == roleName);
 
-            var result = _unitOfWork.UserRoleRepository.GetRolesByUser(userEntity).Any(x => x.Name == roleName);
             return Task.FromResult(result);
         }
 
@@ -517,17 +485,11 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
 
-            var roleEntity = _unitOfWork.RoleRepository.FindByName(roleName);
-            if(roleEntity != null)
-            {
-                IList<CustomIdentityUser> result = _unitOfWork.UserRoleRepository.GetUsersByRole(roleEntity)
-                    .Select(x => getIdentityUser(x))
-                    .ToList();
+            IList<CustomIdentityUser> result = _unitOfWork.UserRoleRepository.GetUsersByRoleName(roleName)
+                .Select(x => getIdentityUser(x))
+                .ToList();
 
-                return Task.FromResult(result);
-            }
-
-            return Task.FromResult(default(IList<CustomIdentityUser>));
+            return Task.FromResult(result);
         }
         #endregion
 
@@ -566,9 +528,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var userEntity = getUserEntity(user);
-
-            IList<Claim> result = _unitOfWork.UserClaimRepository.GetByUser(userEntity)
+            IList<Claim> result = _unitOfWork.UserClaimRepository.GetByUserId(user.Id)
                 .Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList();
 
             return Task.FromResult(result);
@@ -585,15 +545,14 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (claims == null)
                 throw new ArgumentNullException(nameof(claims));
 
-            var userEntity = getUserEntity(user);
-
-            var claimEntities = claims.Select(x => getUserClaimEntity(x, userEntity));
+            var claimEntities = claims.Select(x => getUserClaimEntity(x, user.Id));
             if(claimEntities.Count() > 0)
             {
-                foreach (var claimEntity in claimEntities)
+                claimEntities.ToList().ForEach(claimEntity =>
                 {
                     _unitOfWork.UserClaimRepository.Add(claimEntity);
-                }
+                });
+
                 _unitOfWork.Commit();
             }
 
@@ -614,9 +573,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (newClaim == null)
                 throw new ArgumentNullException(nameof(newClaim));
 
-            var userEntity = getUserEntity(user);
-            var claimEntity = _unitOfWork.UserClaimRepository.GetByUser(userEntity)
-                .FirstOrDefault(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+            var claimEntity = _unitOfWork.UserClaimRepository.GetByUserId(user.Id)
+                .SingleOrDefault(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
 
             if(claimEntity != null)
             {
@@ -624,6 +582,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
                 claimEntity.ClaimValue = newClaim.Value;
 
                 _unitOfWork.UserClaimRepository.Update(claimEntity);
+                _unitOfWork.Commit();
             }
 
             return Task.CompletedTask;
@@ -640,15 +599,15 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (claims == null)
                 throw new ArgumentNullException(nameof(claims));
 
-            var userEntity = getUserEntity(user);
-
+            var userClaimEntities = _unitOfWork.UserClaimRepository.GetByUserId(user.Id);
             if (claims.Count() > 0)
             {
-                foreach (var claim in claims)
+                claims.ToList().ForEach(claim =>
                 {
-                    var userClaimEntity = getUserClaimEntity(claim, userEntity);
-                    _unitOfWork.UserClaimRepository.Remove(userClaimEntity);
-                }
+                    var userClaimEntity = userClaimEntities.SingleOrDefault(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+                    _unitOfWork.UserClaimRepository.Remove(userClaimEntity.Id);
+                });
+
                 _unitOfWork.Commit();
             }
 
@@ -684,9 +643,6 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if(string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentNullException(nameof(value));
-
             var userTokenEntity = new UserToken
             {
                 LoginProvider = loginProvider,
@@ -715,7 +671,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
-            var userTokenEntity = _unitOfWork.UserTokenRepository.Find(new { UserId = user.Id, LoginProvider = loginProvider, Name = name });
+            var userTokenEntity = _unitOfWork.UserTokenRepository.Find(new UserTokenKey { UserId = user.Id, LoginProvider = loginProvider, Name = name });
             if(userTokenEntity != null)
             {
                 _unitOfWork.UserTokenRepository.Remove(userTokenEntity);
@@ -739,83 +695,9 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
-            var userTokenEntity = _unitOfWork.UserTokenRepository.Find(new { UserId = user.Id, LoginProvider = loginProvider, Name = name });
+            var userTokenEntity = _unitOfWork.UserTokenRepository.Find(new UserTokenKey { UserId = user.Id, LoginProvider = loginProvider, Name = name });
 
             return Task.FromResult(userTokenEntity?.Name);
-        }
-        #endregion
-
-        #region Private Methods
-        private User getUserEntity(CustomIdentityUser identityUser)
-        {
-            if (identityUser == null)
-                return null;
-
-            var result = new User();
-            populateUserEntity(result, identityUser);
-
-            return result;
-        }
-
-        private void populateUserEntity(User entity, CustomIdentityUser identityUser)
-        {
-            entity.AccessFailedCount = identityUser.AccessFailedCount;
-            entity.ConcurrencyStamp = identityUser.ConcurrencyStamp;
-            entity.Email = identityUser.Email;
-            entity.EmailConfirmed = identityUser.EmailConfirmed;
-            entity.Id = identityUser.Id;
-            entity.LockoutEnabled = identityUser.LockoutEnabled;
-            entity.LockoutEnd = identityUser.LockoutEnd;
-            entity.NormalizedEmail = identityUser.NormalizedEmail;
-            entity.NormalizedUserName = identityUser.NormalizedUserName;
-            entity.PasswordHash = identityUser.PasswordHash;
-            entity.PhoneNumber = identityUser.PhoneNumber;
-            entity.PhoneNumberConfirmed = identityUser.PhoneNumberConfirmed;
-            entity.SecurityStamp = identityUser.SecurityStamp;
-            entity.TwoFactorEnabled = identityUser.TwoFactorEnabled;
-            entity.UserName = identityUser.UserName;
-        }
-
-        private CustomIdentityUser getIdentityUser(User entity)
-        {
-            if (entity == null)
-                return null;
-
-            var result = new CustomIdentityUser();
-            populateIdentityUser(result, entity);
-
-            return result;
-        }
-
-        private void populateIdentityUser(CustomIdentityUser identityUser, User entity)
-        {
-            identityUser.AccessFailedCount = entity.AccessFailedCount;
-            identityUser.ConcurrencyStamp = entity.ConcurrencyStamp;
-            identityUser.Email = entity.Email;
-            identityUser.EmailConfirmed = entity.EmailConfirmed;
-            identityUser.Id = entity.Id;
-            identityUser.LockoutEnabled = entity.LockoutEnabled;
-            identityUser.LockoutEnd = entity.LockoutEnd;
-            identityUser.NormalizedEmail = entity.NormalizedEmail;
-            identityUser.NormalizedUserName = entity.NormalizedUserName;
-            identityUser.PasswordHash = entity.PasswordHash;
-            identityUser.PhoneNumber = entity.PhoneNumber;
-            identityUser.PhoneNumberConfirmed = entity.PhoneNumberConfirmed;
-            identityUser.SecurityStamp = entity.SecurityStamp;
-            identityUser.TwoFactorEnabled = entity.TwoFactorEnabled;
-            identityUser.UserName = entity.UserName;
-        }
-
-        private UserClaim getUserClaimEntity(Claim value, User userEntity)
-        {
-            return value == null
-                ? default(UserClaim)
-                : new UserClaim
-                {
-                    ClaimType = value.Type,
-                    ClaimValue = value.Value,
-                    UserId = userEntity.Id
-                };
         }
         #endregion
 
@@ -977,6 +859,80 @@ namespace AspNetCoreIdentityExample.Web.Identity
             user.LockoutEnabled = enabled;
 
             return Task.CompletedTask;
+        }
+        #endregion
+
+        #region Private Methods
+        private User getUserEntity(CustomIdentityUser identityUser)
+        {
+            if (identityUser == null)
+                return null;
+
+            var result = new User();
+            populateUserEntity(result, identityUser);
+
+            return result;
+        }
+
+        private void populateUserEntity(User entity, CustomIdentityUser identityUser)
+        {
+            entity.AccessFailedCount = identityUser.AccessFailedCount;
+            entity.ConcurrencyStamp = identityUser.ConcurrencyStamp;
+            entity.Email = identityUser.Email;
+            entity.EmailConfirmed = identityUser.EmailConfirmed;
+            entity.Id = identityUser.Id;
+            entity.LockoutEnabled = identityUser.LockoutEnabled;
+            entity.LockoutEnd = identityUser.LockoutEnd;
+            entity.NormalizedEmail = identityUser.NormalizedEmail;
+            entity.NormalizedUserName = identityUser.NormalizedUserName;
+            entity.PasswordHash = identityUser.PasswordHash;
+            entity.PhoneNumber = identityUser.PhoneNumber;
+            entity.PhoneNumberConfirmed = identityUser.PhoneNumberConfirmed;
+            entity.SecurityStamp = identityUser.SecurityStamp;
+            entity.TwoFactorEnabled = identityUser.TwoFactorEnabled;
+            entity.UserName = identityUser.UserName;
+        }
+
+        private CustomIdentityUser getIdentityUser(User entity)
+        {
+            if (entity == null)
+                return null;
+
+            var result = new CustomIdentityUser();
+            populateIdentityUser(result, entity);
+
+            return result;
+        }
+
+        private void populateIdentityUser(CustomIdentityUser identityUser, User entity)
+        {
+            identityUser.AccessFailedCount = entity.AccessFailedCount;
+            identityUser.ConcurrencyStamp = entity.ConcurrencyStamp;
+            identityUser.Email = entity.Email;
+            identityUser.EmailConfirmed = entity.EmailConfirmed;
+            identityUser.Id = entity.Id;
+            identityUser.LockoutEnabled = entity.LockoutEnabled;
+            identityUser.LockoutEnd = entity.LockoutEnd;
+            identityUser.NormalizedEmail = entity.NormalizedEmail;
+            identityUser.NormalizedUserName = entity.NormalizedUserName;
+            identityUser.PasswordHash = entity.PasswordHash;
+            identityUser.PhoneNumber = entity.PhoneNumber;
+            identityUser.PhoneNumberConfirmed = entity.PhoneNumberConfirmed;
+            identityUser.SecurityStamp = entity.SecurityStamp;
+            identityUser.TwoFactorEnabled = entity.TwoFactorEnabled;
+            identityUser.UserName = entity.UserName;
+        }
+
+        private UserClaim getUserClaimEntity(Claim value, string userId)
+        {
+            return value == null
+                ? default(UserClaim)
+                : new UserClaim
+                {
+                    ClaimType = value.Type,
+                    ClaimValue = value.Value,
+                    UserId = userId
+                };
         }
         #endregion
     }

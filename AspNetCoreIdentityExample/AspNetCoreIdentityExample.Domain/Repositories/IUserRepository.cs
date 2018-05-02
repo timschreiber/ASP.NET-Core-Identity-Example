@@ -4,14 +4,10 @@ using System.Threading.Tasks;
 
 namespace AspNetCoreIdentityExample.Domain.Repositories
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IUserRepository : IRepository<User, string>
     {
-        User FindByUserName(string userName);
-        Task<User> FindByUserNameAsync(string userName);
-        Task<User> FindByUserNameAsync(CancellationToken cancellationToken, string userName);
+        User FindByNormalizedUserName(string normalizedUserName);
 
-        User FindByEmail(string email);
-        Task<User> FindByEmailAsync(string email);
-        Task<User> FindByEmailAsync(CancellationToken cancellationToken, string email);
+        User FindByNormalizedEmail(string normalizedEmail);
     }
 }

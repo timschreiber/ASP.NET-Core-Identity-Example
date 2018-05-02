@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 
 namespace AspNetCoreIdentityExample.Domain.Repositories
 {
-    public interface IRoleRepository : IRepository<Role>
+    public interface IRoleRepository : IRepository<Role, string>
     {
         Role FindByName(string roleName);
-        Task<Role> FindByNameAsync(string roleName);
-        Task<Role> FindByNameAsync(CancellationToken cancellationToken, string roleName);
     }
 }
