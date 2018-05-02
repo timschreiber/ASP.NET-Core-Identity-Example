@@ -39,15 +39,15 @@ namespace AspNetCoreIdentityExample.Data.Repositories
 
         public User Find(string key)
         {
-            return QuerySingle<User>(
-                sql: "SELECT * FROM AspNetUsers WHERE Id = @id",
+            return QuerySingleOrDefault<User>(
+                sql: "SELECT * FROM AspNetUsers WHERE Id = @key",
                 param: new { key }
             );
         }
 
         public User FindByNormalizedEmail(string normalizedEmail)
         {
-            return QuerySingle<User>(
+            return QuerySingleOrDefault<User>(
                 sql: "SELECT * FROM AspNetUsers WHERE NormalizedEmail = @normalizedEmail",
                 param: new { normalizedEmail }
             );
@@ -55,7 +55,7 @@ namespace AspNetCoreIdentityExample.Data.Repositories
 
         public User FindByNormalizedUserName(string normalizedUserName)
         {
-            return QuerySingle<User>(
+            return QuerySingleOrDefault<User>(
                 sql: "SELECT * FROM AspNetUsers WHERE NormalizedUserName = @normalizedUserName",
                 param: new { normalizedUserName }
             );

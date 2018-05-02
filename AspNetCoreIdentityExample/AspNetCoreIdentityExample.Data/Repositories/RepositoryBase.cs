@@ -19,9 +19,9 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             return Connection.ExecuteScalar<T>(sql, param, _transaction);
         }
 
-        protected T QuerySingle<T>(string sql, object param)
+        protected T QuerySingleOrDefault<T>(string sql, object param)
         {
-            return Connection.QuerySingle<T>(sql, param, _transaction);
+            return Connection.QuerySingleOrDefault<T>(sql, param, _transaction);
         }
 
         protected IEnumerable<T> Query<T>(string sql, object param = null)

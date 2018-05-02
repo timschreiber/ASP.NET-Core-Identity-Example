@@ -29,11 +29,11 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             );
         }
 
-        public UserClaim Find(int id)
+        public UserClaim Find(int key)
         {
-            return QuerySingle<UserClaim>(
-                sql: "SELECT Id, ClaimType, ClaimValue, UserId FROM AspNetUserClaims WHERE Id = @id",
-                param: new { id }
+            return QuerySingleOrDefault<UserClaim>(
+                sql: "SELECT Id, ClaimType, ClaimValue, UserId FROM AspNetUserClaims WHERE Id = @key",
+                param: new { key }
             );
         }
 

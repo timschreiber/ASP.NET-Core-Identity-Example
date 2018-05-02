@@ -30,7 +30,7 @@ namespace AspNetCoreIdentityExample.Data.Repositories
 
         public UserToken Find(UserTokenKey key)
         {
-            return QuerySingle<UserToken>(
+            return QuerySingleOrDefault<UserToken>(
                 sql: "SELECT * FROM AspNetUserTokens WHERE UserId = @UserId AND LoginProvider = @LoginProvider AND [Name] = @Name",
                 param: key
             );

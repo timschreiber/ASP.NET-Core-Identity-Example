@@ -8,7 +8,7 @@ namespace AspNetCoreIdentityExample.Domain.Repositories
     {
         IEnumerable<TEntity> All();
 
-        TEntity Find(TKey id);
+        TEntity Find(TKey key);
 
         void Add(TEntity entity);
 

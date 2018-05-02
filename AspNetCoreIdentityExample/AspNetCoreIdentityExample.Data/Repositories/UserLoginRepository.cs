@@ -30,7 +30,7 @@ namespace AspNetCoreIdentityExample.Data.Repositories
 
         public UserLogin Find(UserLoginKey id)
         {
-            return QuerySingle<UserLogin>(
+            return QuerySingleOrDefault<UserLogin>(
                 sql: "SELECT * FROM AspNetUserLogins WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey",
                 param: id
             );

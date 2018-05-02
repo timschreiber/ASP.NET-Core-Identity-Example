@@ -1,9 +1,7 @@
-﻿@using System.Collections.Generic
-@using System.Linq
-@using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.Http.Authentication
+﻿@using System.Linq
+@using AspNetCoreIdentityExample.Web.Identity
 @model LoginViewModel
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<CustomIdentityUser> SignInManager
 
 @{
     ViewData["Title"] = "Log in";

@@ -27,17 +27,17 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             );
         }
 
-        public Role Find(string id)
+        public Role Find(string key)
         {
-            return QuerySingle<Role>(
-                sql: "SELECT * FROM AspNetRoles WHERE Id = @id",
-                param: new { id }
+            return QuerySingleOrDefault<Role>(
+                sql: "SELECT * FROM AspNetRoles WHERE Id = @key",
+                param: new { key }
             );
         }
 
         public Role FindByName(string roleName)
         {
-            return QuerySingle<Role>(
+            return QuerySingleOrDefault<Role>(
                 sql: "SELECT * FROM AspNetRoles WHERE [Name] = @roleName",
                 param: new { roleName }
             );

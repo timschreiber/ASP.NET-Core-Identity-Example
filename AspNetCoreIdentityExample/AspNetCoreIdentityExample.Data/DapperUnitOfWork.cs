@@ -4,6 +4,7 @@ using AspNetCoreIdentityExample.Domain.Entities;
 using AspNetCoreIdentityExample.Domain.Repositories;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace AspNetCoreIdentityExample.Data
 {
@@ -23,7 +24,11 @@ namespace AspNetCoreIdentityExample.Data
         #endregion
 
         public DapperUnitOfWork(string connectionString)
-        { }
+        {
+            _connection = new SqlConnection(connectionString);
+            _connection.Open();
+            _transaction = _connection.BeginTransaction();
+        }
 
         #region IUnitOfWork Members
         public IRoleRepository RoleRepository

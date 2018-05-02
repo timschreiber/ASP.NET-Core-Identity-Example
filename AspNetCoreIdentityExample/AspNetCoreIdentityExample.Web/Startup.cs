@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AspNetCoreIdentityExample.Web.Data;
 using AspNetCoreIdentityExample.Web.Models;
 using AspNetCoreIdentityExample.Web.Services;
 using AspNetCoreIdentityExample.Domain;
@@ -29,14 +28,12 @@ namespace AspNetCoreIdentityExample.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add Dependencies
-            services.AddScoped<IUnitOfWork, DapperUnitOfWork>(provider => new DapperUnitOfWork("ConnectionString"));
-
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<CustomIdentityUser, CustomIdentityRole>()
                 .AddCustomStores()
                 .AddDefaultTokenProviders();
 
             // Add application services.
+            services.AddScoped<IUnitOfWork, DapperUnitOfWork>(provider => new DapperUnitOfWork(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddMvc();

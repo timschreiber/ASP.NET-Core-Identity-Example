@@ -19,11 +19,11 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             );
         }
 
-        public RoleClaim Find(int id)
+        public RoleClaim Find(int key)
         {
-            return QuerySingle<RoleClaim>(
-                sql: "SELECT * FROM AspNetRoleClaims WHERE Id = @id",
-                param: new { id }
+            return QuerySingleOrDefault<RoleClaim>(
+                sql: "SELECT * FROM AspNetRoleClaims WHERE Id = @key",
+                param: new { key }
             );
         }
 

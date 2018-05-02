@@ -1,5 +1,6 @@
 ﻿@using AspNetCoreIdentityExample.Web.Views.Manage
-@inject SignInManager<ApplicationUser> SignInManager
+@using AspNetCoreIdentityExample.Web.Identity
+@inject SignInManager<CustomIdentityUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }
@@ -11,6 +12,6 @@
     {
         <li class="@ManageNavPages.ExternalLoginsNavClass(ViewContext)"><a asp-action="ExternalLogins">External logins</a></li>
     }
-    <li class="@ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)"><a asp-action="TwoFactorAuthentication">Two-factor authentication</a></li>
+    @*<li class="@ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)"><a asp-action="TwoFactorAuthentication">Two-factor authentication</a></li>*@
 </ul>
 
