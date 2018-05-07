@@ -1,5 +1,6 @@
 ﻿using AspNetCoreIdentityExample.Domain;
 using AspNetCoreIdentityExample.Domain.Entities;
+using AspNetCoreIdentityExample.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -11,18 +12,18 @@ using System.Threading.Tasks;
 namespace AspNetCoreIdentityExample.Web.Identity
 {
     public class CustomUserStore :
-        IUserStore<CustomIdentityUser>,
-        IUserPasswordStore<CustomIdentityUser>,
-        IUserEmailStore<CustomIdentityUser>,
-        IUserLoginStore<CustomIdentityUser>,
-        IUserRoleStore<CustomIdentityUser>,
-        IUserSecurityStampStore<CustomIdentityUser>,
-        IUserClaimStore<CustomIdentityUser>,
-        IUserAuthenticationTokenStore<CustomIdentityUser>,
-        IUserTwoFactorStore<CustomIdentityUser>,
-        IUserPhoneNumberStore<CustomIdentityUser>,
-        IUserLockoutStore<CustomIdentityUser>,
-        IQueryableUserStore<CustomIdentityUser>
+        IUserStore<ApplicationUser>,
+        IUserPasswordStore<ApplicationUser>,
+        IUserEmailStore<ApplicationUser>,
+        IUserLoginStore<ApplicationUser>,
+        IUserRoleStore<ApplicationUser>,
+        IUserSecurityStampStore<ApplicationUser>,
+        IUserClaimStore<ApplicationUser>,
+        IUserAuthenticationTokenStore<ApplicationUser>,
+        IUserTwoFactorStore<ApplicationUser>,
+        IUserPhoneNumberStore<ApplicationUser>,
+        IUserLockoutStore<ApplicationUser>,
+        IQueryableUserStore<ApplicationUser>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -31,20 +32,20 @@ namespace AspNetCoreIdentityExample.Web.Identity
             _unitOfWork = unitOfWork;
         }
 
-        #region IQueryableUserStore<CustomIdentityUser> Members
-        public IQueryable<CustomIdentityUser> Users
+        #region IQueryableUserStore<ApplicationUser> Members
+        public IQueryable<ApplicationUser> Users
         {
             get
             {
                 return _unitOfWork.UserRepository.All()
-                    .Select(x => getIdentityUser(x))
+                    .Select(x => getApplicationUser(x))
                     .AsQueryable();
             }
         }
         #endregion
 
-        #region IUserStore<CustomIdentityUser> Members
-        public Task<IdentityResult> CreateAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        #region IUserStore<ApplicationUser> Members
+        public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             try
             {
@@ -67,7 +68,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             }
         }
 
-        public Task<IdentityResult> DeleteAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             try
             {
@@ -88,7 +89,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             }
         }
 
-        public Task<CustomIdentityUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
+        public Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -101,20 +102,20 @@ namespace AspNetCoreIdentityExample.Web.Identity
 
             var userEntity = _unitOfWork.UserRepository.Find(id.ToString());
 
-            return Task.FromResult(getIdentityUser(userEntity));
+            return Task.FromResult(getApplicationUser(userEntity));
         }
 
-        public Task<CustomIdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        public Task<ApplicationUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
 
             var userEntity = _unitOfWork.UserRepository.FindByNormalizedUserName(normalizedUserName);
 
-            return Task.FromResult(getIdentityUser(userEntity));
+            return Task.FromResult(getApplicationUser(userEntity));
         }
 
-        public Task<string> GetNormalizedUserNameAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<string> GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -125,7 +126,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.NormalizedUserName);
         }
 
-        public Task<string> GetUserIdAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<string> GetUserIdAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -136,7 +137,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.Id);
         }
 
-        public Task<string> GetUserNameAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<string> GetUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -147,7 +148,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.UserName);
         }
 
-        public Task SetNormalizedUserNameAsync(CustomIdentityUser user, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -160,7 +161,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task SetUserNameAsync(CustomIdentityUser user, string userName, CancellationToken cancellationToken)
+        public Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -173,7 +174,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<IdentityResult> UpdateAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             try
             {
@@ -202,8 +203,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
         }
         #endregion
 
-        #region IUserPasswordStore<CustomIdentityUser> Members
-        public Task SetPasswordHashAsync(CustomIdentityUser user, string passwordHash, CancellationToken cancellationToken)
+        #region IUserPasswordStore<ApplicationUser> Members
+        public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -216,7 +217,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<string> GetPasswordHashAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<string> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -227,7 +228,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.PasswordHash);
         }
 
-        public Task<bool> HasPasswordAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -239,8 +240,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
         }
         #endregion
 
-        #region IUserEmailStore<CustomIdentityUser> Members
-        public Task SetEmailAsync(CustomIdentityUser user, string email, CancellationToken cancellationToken)
+        #region IUserEmailStore<ApplicationUser> Members
+        public Task SetEmailAsync(ApplicationUser user, string email, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -253,7 +254,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<string> GetEmailAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<string> GetEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -264,7 +265,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.Email);
         }
 
-        public Task<bool> GetEmailConfirmedAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<bool> GetEmailConfirmedAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -275,7 +276,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.EmailConfirmed);
         }
 
-        public Task SetEmailConfirmedAsync(CustomIdentityUser user, bool confirmed, CancellationToken cancellationToken)
+        public Task SetEmailConfirmedAsync(ApplicationUser user, bool confirmed, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -288,17 +289,17 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<CustomIdentityUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        public Task<ApplicationUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(normalizedEmail))
                 throw new ArgumentNullException(nameof(normalizedEmail));
 
             var userEntity = _unitOfWork.UserRepository.FindByNormalizedEmail(normalizedEmail);
 
-            return Task.FromResult(getIdentityUser(userEntity));
+            return Task.FromResult(getApplicationUser(userEntity));
         }
 
-        public Task<string> GetNormalizedEmailAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<string> GetNormalizedEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -309,7 +310,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.NormalizedEmail);
         }
 
-        public Task SetNormalizedEmailAsync(CustomIdentityUser user, string normalizedEmail, CancellationToken cancellationToken)
+        public Task SetNormalizedEmailAsync(ApplicationUser user, string normalizedEmail, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -323,8 +324,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
         }
         #endregion
 
-        #region IUserLoginStore<CustomIdentityUser> Members
-        public Task AddLoginAsync(CustomIdentityUser user, UserLoginInfo login, CancellationToken cancellationToken)
+        #region IUserLoginStore<ApplicationUser> Members
+        public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -355,7 +356,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task RemoveLoginAsync(CustomIdentityUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
+        public Task RemoveLoginAsync(ApplicationUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -375,7 +376,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<IList<UserLoginInfo>> GetLoginsAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -390,7 +391,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(result);
         }
 
-        public Task<CustomIdentityUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+        public Task<ApplicationUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -403,16 +404,16 @@ namespace AspNetCoreIdentityExample.Web.Identity
 
             var loginEntity = _unitOfWork.UserLoginRepository.Find(new UserLoginKey { LoginProvider = loginProvider, ProviderKey = providerKey });
             if (loginEntity == null)
-                return Task.FromResult(default(CustomIdentityUser));
+                return Task.FromResult(default(ApplicationUser));
 
             var userEntity = _unitOfWork.UserRepository.Find(loginEntity.UserId);
 
-            return Task.FromResult(getIdentityUser(userEntity));
+            return Task.FromResult(getApplicationUser(userEntity));
         }
         #endregion
 
-        #region IUserRoleStore<CustomIdentityUser> Members
-        public Task AddToRoleAsync(CustomIdentityUser user, string roleName, CancellationToken cancellationToken)
+        #region IUserRoleStore<ApplicationUser> Members
+        public Task AddToRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -429,7 +430,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task RemoveFromRoleAsync(CustomIdentityUser user, string roleName, CancellationToken cancellationToken)
+        public Task RemoveFromRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -447,7 +448,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<IList<string>> GetRolesAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<IList<string>> GetRolesAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -461,7 +462,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(result);
         }
 
-        public Task<bool> IsInRoleAsync(CustomIdentityUser user, string roleName, CancellationToken cancellationToken)
+        public Task<bool> IsInRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -477,7 +478,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(result);
         }
 
-        public Task<IList<CustomIdentityUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        public Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -485,16 +486,16 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentNullException(nameof(roleName));
 
-            IList<CustomIdentityUser> result = _unitOfWork.UserRoleRepository.GetUsersByRoleName(roleName)
-                .Select(x => getIdentityUser(x))
+            IList<ApplicationUser> result = _unitOfWork.UserRoleRepository.GetUsersByRoleName(roleName)
+                .Select(x => getApplicationUser(x))
                 .ToList();
 
             return Task.FromResult(result);
         }
         #endregion
 
-        #region IUserSecurityStampStore<CustomIdentityUser> Members
-        public Task SetSecurityStampAsync(CustomIdentityUser user, string stamp, CancellationToken cancellationToken)
+        #region IUserSecurityStampStore<ApplicationUser> Members
+        public Task SetSecurityStampAsync(ApplicationUser user, string stamp, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -507,7 +508,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<string> GetSecurityStampAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<string> GetSecurityStampAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -519,8 +520,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
         }
         #endregion
 
-        #region IUserClaimStore<CustomIdentityUser> Members
-        public Task<IList<Claim>> GetClaimsAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        #region IUserClaimStore<ApplicationUser> Members
+        public Task<IList<Claim>> GetClaimsAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -534,7 +535,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(result);
         }
 
-        public Task AddClaimsAsync(CustomIdentityUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        public Task AddClaimsAsync(ApplicationUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -559,7 +560,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task ReplaceClaimAsync(CustomIdentityUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
+        public Task ReplaceClaimAsync(ApplicationUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -588,7 +589,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task RemoveClaimsAsync(CustomIdentityUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        public Task RemoveClaimsAsync(ApplicationUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -614,7 +615,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<IList<CustomIdentityUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
+        public Task<IList<ApplicationUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -622,14 +623,14 @@ namespace AspNetCoreIdentityExample.Web.Identity
             if (claim == null)
                 throw new ArgumentNullException(nameof(claim));
 
-            IList<CustomIdentityUser> result = _unitOfWork.UserClaimRepository.GetUsersForClaim(claim.Type, claim.Value).Select(x => getIdentityUser(x)).ToList();
+            IList<ApplicationUser> result = _unitOfWork.UserClaimRepository.GetUsersForClaim(claim.Type, claim.Value).Select(x => getApplicationUser(x)).ToList();
 
             return Task.FromResult(result);
         }
         #endregion
 
-        #region IUserAuthenticationTokenStore<CustomIdentityUser> Members
-        public Task SetTokenAsync(CustomIdentityUser user, string loginProvider, string name, string value, CancellationToken cancellationToken)
+        #region IUserAuthenticationTokenStore<ApplicationUser> Members
+        public Task SetTokenAsync(ApplicationUser user, string loginProvider, string name, string value, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -657,7 +658,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task RemoveTokenAsync(CustomIdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
+        public Task RemoveTokenAsync(ApplicationUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -681,7 +682,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<string> GetTokenAsync(CustomIdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
+        public Task<string> GetTokenAsync(ApplicationUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -701,8 +702,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
         }
         #endregion
 
-        #region IUserTwoFactorStore<CustomIdentityUser> Members
-        public Task SetTwoFactorEnabledAsync(CustomIdentityUser user, bool enabled, CancellationToken cancellationToken)
+        #region IUserTwoFactorStore<ApplicationUser> Members
+        public Task SetTwoFactorEnabledAsync(ApplicationUser user, bool enabled, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -715,7 +716,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<bool> GetTwoFactorEnabledAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<bool> GetTwoFactorEnabledAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -727,8 +728,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
         }
         #endregion
 
-        #region IUserPhoneNumberStore<CustomIdentityUser> Members
-        public Task SetPhoneNumberAsync(CustomIdentityUser user, string phoneNumber, CancellationToken cancellationToken)
+        #region IUserPhoneNumberStore<ApplicationUser> Members
+        public Task SetPhoneNumberAsync(ApplicationUser user, string phoneNumber, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -741,7 +742,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<string> GetPhoneNumberAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<string> GetPhoneNumberAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -752,7 +753,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.PhoneNumber);
         }
 
-        public Task<bool> GetPhoneNumberConfirmedAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<bool> GetPhoneNumberConfirmedAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -763,7 +764,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.PhoneNumberConfirmed);
         }
 
-        public Task SetPhoneNumberConfirmedAsync(CustomIdentityUser user, bool confirmed, CancellationToken cancellationToken)
+        public Task SetPhoneNumberConfirmedAsync(ApplicationUser user, bool confirmed, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -777,8 +778,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
         }
         #endregion
 
-        #region IUserLockoutStore<CustomIdentityUser> Members
-        public Task<DateTimeOffset?> GetLockoutEndDateAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        #region IUserLockoutStore<ApplicationUser> Members
+        public Task<DateTimeOffset?> GetLockoutEndDateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -789,7 +790,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.LockoutEnd);
         }
 
-        public Task SetLockoutEndDateAsync(CustomIdentityUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+        public Task SetLockoutEndDateAsync(ApplicationUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -802,7 +803,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<int> IncrementAccessFailedCountAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<int> IncrementAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -813,7 +814,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(++user.AccessFailedCount);
         }
 
-        public Task ResetAccessFailedCountAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task ResetAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -826,7 +827,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<int> GetAccessFailedCountAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<int> GetAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -837,7 +838,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.AccessFailedCount);
         }
 
-        public Task<bool> GetLockoutEnabledAsync(CustomIdentityUser user, CancellationToken cancellationToken)
+        public Task<bool> GetLockoutEnabledAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -848,7 +849,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(user.LockoutEnabled);
         }
 
-        public Task SetLockoutEnabledAsync(CustomIdentityUser user, bool enabled, CancellationToken cancellationToken)
+        public Task SetLockoutEnabledAsync(ApplicationUser user, bool enabled, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -863,64 +864,64 @@ namespace AspNetCoreIdentityExample.Web.Identity
         #endregion
 
         #region Private Methods
-        private User getUserEntity(CustomIdentityUser identityUser)
+        private User getUserEntity(ApplicationUser ApplicationUser)
         {
-            if (identityUser == null)
+            if (ApplicationUser == null)
                 return null;
 
             var result = new User();
-            populateUserEntity(result, identityUser);
+            populateUserEntity(result, ApplicationUser);
 
             return result;
         }
 
-        private void populateUserEntity(User entity, CustomIdentityUser identityUser)
+        private void populateUserEntity(User entity, ApplicationUser ApplicationUser)
         {
-            entity.AccessFailedCount = identityUser.AccessFailedCount;
-            entity.ConcurrencyStamp = identityUser.ConcurrencyStamp;
-            entity.Email = identityUser.Email;
-            entity.EmailConfirmed = identityUser.EmailConfirmed;
-            entity.Id = identityUser.Id;
-            entity.LockoutEnabled = identityUser.LockoutEnabled;
-            entity.LockoutEnd = identityUser.LockoutEnd;
-            entity.NormalizedEmail = identityUser.NormalizedEmail;
-            entity.NormalizedUserName = identityUser.NormalizedUserName;
-            entity.PasswordHash = identityUser.PasswordHash;
-            entity.PhoneNumber = identityUser.PhoneNumber;
-            entity.PhoneNumberConfirmed = identityUser.PhoneNumberConfirmed;
-            entity.SecurityStamp = identityUser.SecurityStamp;
-            entity.TwoFactorEnabled = identityUser.TwoFactorEnabled;
-            entity.UserName = identityUser.UserName;
+            entity.AccessFailedCount = ApplicationUser.AccessFailedCount;
+            entity.ConcurrencyStamp = ApplicationUser.ConcurrencyStamp;
+            entity.Email = ApplicationUser.Email;
+            entity.EmailConfirmed = ApplicationUser.EmailConfirmed;
+            entity.Id = ApplicationUser.Id;
+            entity.LockoutEnabled = ApplicationUser.LockoutEnabled;
+            entity.LockoutEnd = ApplicationUser.LockoutEnd;
+            entity.NormalizedEmail = ApplicationUser.NormalizedEmail;
+            entity.NormalizedUserName = ApplicationUser.NormalizedUserName;
+            entity.PasswordHash = ApplicationUser.PasswordHash;
+            entity.PhoneNumber = ApplicationUser.PhoneNumber;
+            entity.PhoneNumberConfirmed = ApplicationUser.PhoneNumberConfirmed;
+            entity.SecurityStamp = ApplicationUser.SecurityStamp;
+            entity.TwoFactorEnabled = ApplicationUser.TwoFactorEnabled;
+            entity.UserName = ApplicationUser.UserName;
         }
 
-        private CustomIdentityUser getIdentityUser(User entity)
+        private ApplicationUser getApplicationUser(User entity)
         {
             if (entity == null)
                 return null;
 
-            var result = new CustomIdentityUser();
-            populateIdentityUser(result, entity);
+            var result = new ApplicationUser();
+            populateApplicationUser(result, entity);
 
             return result;
         }
 
-        private void populateIdentityUser(CustomIdentityUser identityUser, User entity)
+        private void populateApplicationUser(ApplicationUser ApplicationUser, User entity)
         {
-            identityUser.AccessFailedCount = entity.AccessFailedCount;
-            identityUser.ConcurrencyStamp = entity.ConcurrencyStamp;
-            identityUser.Email = entity.Email;
-            identityUser.EmailConfirmed = entity.EmailConfirmed;
-            identityUser.Id = entity.Id;
-            identityUser.LockoutEnabled = entity.LockoutEnabled;
-            identityUser.LockoutEnd = entity.LockoutEnd;
-            identityUser.NormalizedEmail = entity.NormalizedEmail;
-            identityUser.NormalizedUserName = entity.NormalizedUserName;
-            identityUser.PasswordHash = entity.PasswordHash;
-            identityUser.PhoneNumber = entity.PhoneNumber;
-            identityUser.PhoneNumberConfirmed = entity.PhoneNumberConfirmed;
-            identityUser.SecurityStamp = entity.SecurityStamp;
-            identityUser.TwoFactorEnabled = entity.TwoFactorEnabled;
-            identityUser.UserName = entity.UserName;
+            ApplicationUser.AccessFailedCount = entity.AccessFailedCount;
+            ApplicationUser.ConcurrencyStamp = entity.ConcurrencyStamp;
+            ApplicationUser.Email = entity.Email;
+            ApplicationUser.EmailConfirmed = entity.EmailConfirmed;
+            ApplicationUser.Id = entity.Id;
+            ApplicationUser.LockoutEnabled = entity.LockoutEnabled;
+            ApplicationUser.LockoutEnd = entity.LockoutEnd;
+            ApplicationUser.NormalizedEmail = entity.NormalizedEmail;
+            ApplicationUser.NormalizedUserName = entity.NormalizedUserName;
+            ApplicationUser.PasswordHash = entity.PasswordHash;
+            ApplicationUser.PhoneNumber = entity.PhoneNumber;
+            ApplicationUser.PhoneNumberConfirmed = entity.PhoneNumberConfirmed;
+            ApplicationUser.SecurityStamp = entity.SecurityStamp;
+            ApplicationUser.TwoFactorEnabled = entity.TwoFactorEnabled;
+            ApplicationUser.UserName = entity.UserName;
         }
 
         private UserClaim getUserClaimEntity(Claim value, string userId)

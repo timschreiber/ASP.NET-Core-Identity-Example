@@ -17,7 +17,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Add(UserClaim entity)
         {
             entity.Id = ExecuteScalar<int>(
-                sql: "INSERT INTO AspNetUserClaims(ClaimType, ClaimValue, UserId) VALUES(@ClaimType, @ClaimValue, @UserId); SELECT SCOPE_IDENTITY()",
+                sql: @"
+                    INSERT INTO AspNetUserClaims(ClaimType, ClaimValue, UserId)
+                    VALUES(@ClaimType, @ClaimValue, @UserId);
+                    SELECT SCOPE_IDENTITY()",
                 param: entity
             );
         }
@@ -25,14 +28,18 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public IEnumerable<UserClaim> All()
         {
             return Query<UserClaim>(
-                sql: "SELECT Id, ClaimType, ClaimValue, UserId FROM AspNetUserClaims"
+                sql: @"
+                    SELECT Id, ClaimType, ClaimValue, UserId
+                    FROM AspNetUserClaims"
             );
         }
 
         public UserClaim Find(int key)
         {
             return QuerySingleOrDefault<UserClaim>(
-                sql: "SELECT Id, ClaimType, ClaimValue, UserId FROM AspNetUserClaims WHERE Id = @key",
+                sql: @"
+                    SELECT Id, ClaimType, ClaimValue, UserId
+                    FROM AspNetUserClaims WHERE Id = @key",
                 param: new { key }
             );
         }
@@ -40,7 +47,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public IEnumerable<UserClaim> GetByUserId(string userId)
         {
             return Query<UserClaim>(
-                sql: "SELECT Id, ClaimType, ClaimValue, UserId FROM AspNetUserClaims WHERE UserId = @userId",
+                sql: @"
+                    SELECT Id, ClaimType, ClaimValue, UserId
+                    FROM AspNetUserClaims
+                    WHERE UserId = @userId",
                 param: new { userId }
             );
         }
@@ -50,14 +60,17 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             return Query<User>(
                 sql: @"
                     SELECT
-	                    u.Id, u.AccessFailedCount, u.ConcurrencyStamp, u.Email, u.EmailConfirmed,
-	                    u.LockoutEnabled, u.LockoutEnd, u.NormalizedEmail, u.NormalizedUserName,
-	                    u.PasswordHash, u.PhoneNumber, u.PhoneNumberConfirmed, u.SecurityStamp,
+	                    u.Id, u.AccessFailedCount, u.ConcurrencyStamp, u.Email,
+                        u.EmailConfirmed, u.LockoutEnabled, u.LockoutEnd,
+                        u.NormalizedEmail, u.NormalizedUserName, u.PasswordHash,
+                        u.PhoneNumber, u.PhoneNumberConfirmed, u.SecurityStamp,
 	                    u.TwoFactorEnabled, u.UserName
                     FROM
-	                    AspNetUserClaims c INNER JOIN AspNetUsers u ON c.UserId = u.Id
+	                    AspNetUserClaims c INNER JOIN
+                        AspNetUsers u ON c.UserId = u.Id
                     WHERE
-	                    c.ClaimType = @claimType AND c.ClaimValue = @claimValue
+	                    c.ClaimType = @claimType AND
+                        c.ClaimValue = @claimValue
                 ",
                 param: new { claimType, claimValue }
             );
@@ -66,7 +79,9 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Remove(int key)
         {
             Execute(
-                sql: "DELETE FROM AspNetUserClaims WHERE Id = @key",
+                sql: @"
+                    DELETE FROM AspNetUserClaims
+                    WHERE Id = @key",
                 param: new { key }
             );
         }
@@ -74,7 +89,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Update(UserClaim entity)
         {
             Execute(
-                sql: "UPDATE AspNetUserClaims SET ClaimType = @ClaimType, ClaimValue = @ClaimValue, UserId = @UserId WHERE Id = @Id",
+                sql: @"
+                    UPDATE AspNetUserClaims SET ClaimType = @ClaimType,
+                        ClaimValue = @ClaimValue, UserId = @UserId
+                    WHERE Id = @Id",
                 param: entity
             );
         }

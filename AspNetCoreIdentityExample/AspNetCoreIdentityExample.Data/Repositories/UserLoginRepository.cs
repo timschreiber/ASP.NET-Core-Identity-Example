@@ -16,7 +16,9 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Add(UserLogin entity)
         {
             Execute(
-                sql: "INSERT INTO AspNetUserLogins(LoginProvider, ProviderKey, ProviderDisplayName, UserId) VALUES(@LoginProvider, @ProviderKey, @ProviderDisplayName, @UserId)",
+                sql: @"
+                    INSERT INTO AspNetUserLogins(LoginProvider, ProviderKey, ProviderDisplayName, UserId)
+                    VALUES(@LoginProvider, @ProviderKey, @ProviderDisplayName, @UserId)",
                 param: entity
             );
         }
@@ -31,7 +33,9 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public UserLogin Find(UserLoginKey id)
         {
             return QuerySingleOrDefault<UserLogin>(
-                sql: "SELECT * FROM AspNetUserLogins WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey",
+                sql: @"
+                    SELECT * FROM AspNetUserLogins
+                    WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey",
                 param: id
             );
         }
@@ -47,7 +51,9 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Remove(UserLoginKey key)
         {
             Execute(
-                sql: "DELETE FROM AspNetUserLogins WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey",
+                sql: @"
+                    DELETE FROM AspNetUserLogins
+                    WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey",
                 param: key
             );
         }
@@ -55,7 +61,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Update(UserLogin entity)
         {
             Execute(
-                sql: "UPDATE AspNetUserLogins SET ProviderDisplayName = @ProviderDisplayName, UserId = @UserId WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey",
+                sql: @"
+                    UPDATE AspNetUserLogins SET ProviderDisplayName = @ProviderDisplayName,
+                        UserId = @UserId
+                    WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey",
                 param: entity
             );
         }

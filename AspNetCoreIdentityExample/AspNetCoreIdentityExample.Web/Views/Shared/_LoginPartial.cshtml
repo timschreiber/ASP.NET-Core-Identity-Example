@@ -2,8 +2,8 @@
 @using AspNetCoreIdentityExample.Web.Models
 @using AspNetCoreIdentityExample.Web.Identity
 
-@inject SignInManager<CustomIdentityUser> SignInManager
-@inject UserManager<CustomIdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AspNetCoreIdentityExample.Web.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCoreIdentityExample.Web.Identity
@@ -7,8 +8,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
     {
         public static IdentityBuilder AddCustomStores(this IdentityBuilder builder)
         {
-            builder.Services.AddTransient<IUserStore<CustomIdentityUser>, CustomUserStore>();
-            builder.Services.AddTransient<IRoleStore<CustomIdentityRole>, CustomRoleStore>();
+            builder.Services.AddTransient<IUserStore<ApplicationUser>, CustomUserStore>();
+            builder.Services.AddTransient<IRoleStore<IdentityRole>, CustomRoleStore>();
             return builder;
         }
     }

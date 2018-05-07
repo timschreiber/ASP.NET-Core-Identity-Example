@@ -14,7 +14,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Add(RoleClaim entity)
         {
             entity.Id = ExecuteScalar<int>(
-                sql: "INSERT INTO AspNetRoleClaims(ClaimType, ClaimValue, RoldId) VALUES(@ClaimType, @ClaimValue, @RoldId); SELECT SCOPE_IDENTITY()",
+                sql: @"
+                    INSERT INTO AspNetRoleClaims(ClaimType, ClaimValue, RoldId)
+                    VALUES(@ClaimType, @ClaimValue, @RoldId);
+                    SELECT SCOPE_IDENTITY()",
                 param: entity
             );
         }
@@ -53,7 +56,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Update(RoleClaim entity)
         {
             Execute(
-                sql: "UPDATE AspNetRoleClaims SET ClaimType = @ClaimType, ClaimValue = @ClaimValue, RoleId = @RoleId WHERE Id = @Id",
+                sql: @"
+                    UPDATE AspNetRoleClaims SET ClaimType = @ClaimType,
+                        ClaimValue = @ClaimValue, RoleId = @RoleId
+                    WHERE Id = @Id",
                 param: entity
             );
         }

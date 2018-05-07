@@ -16,7 +16,9 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Add(UserToken entity)
         {
             Execute(
-                sql: "INSERT INTO AspNetUserTokens(UserId, LoginProvider, [Name], Value) VALUES(@UserId, @LoginProvider, @Name, @Value)",
+                sql: @"
+                    INSERT INTO AspNetUserTokens(UserId, LoginProvider, [Name], Value)
+                    VALUES(@UserId, @LoginProvider, @Name, @Value)",
                 param: entity
             );
         }
@@ -31,7 +33,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public UserToken Find(UserTokenKey key)
         {
             return QuerySingleOrDefault<UserToken>(
-                sql: "SELECT * FROM AspNetUserTokens WHERE UserId = @UserId AND LoginProvider = @LoginProvider AND [Name] = @Name",
+                sql: @"
+                    SELECT * FROM AspNetUserTokens
+                    WHERE UserId = @UserId AND LoginProvider = @LoginProvider
+                        AND [Name] = @Name",
                 param: key
             );
         }
@@ -39,7 +44,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Remove(UserTokenKey key)
         {
             Execute(
-                sql: "DELETE FROM AspNetUserTokens WHERE UserId = @UserId AND LoginProvider = @LoginProvider AND [Name] = @Name",
+                sql: @"
+                    DELETE FROM AspNetUserTokens
+                    WHERE UserId = @UserId AND LoginProvider = @LoginProvider
+                        AND [Name] = @Name",
                 param: key
             );
         }
@@ -47,7 +55,11 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Update(UserToken entity)
         {
             Execute(
-                sql: "UPDATE AspNetUserTokens SET Value = @Value WHERE UserId = @UserId AND LoginProvider = @LoginProvider AND [Name] = @Name",
+                sql: @"
+                    UPDATE AspNetUserTokens SET Value = @Value
+                    WHERE UserId = @UserId
+                        AND LoginProvider = @LoginProvider
+                        AND [Name] = @Name",
                 param: entity
             );
         }

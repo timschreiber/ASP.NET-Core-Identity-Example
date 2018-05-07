@@ -1,6 +1,6 @@
 ﻿@using AspNetCoreIdentityExample.Web.Views.Manage
 @using AspNetCoreIdentityExample.Web.Identity
-@inject SignInManager<CustomIdentityUser> SignInManager
+@inject SignInManager<IdentityUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

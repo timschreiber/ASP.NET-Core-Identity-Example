@@ -15,7 +15,9 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Add(Role entity)
         {
             Execute(
-                sql: "INSERT INTO AspNetRoles(Id, ConcurrencyStamp, [Name], NormalizedName) VALUES(@Id, @ConcurrencyStamp, @Name, @NormalizedName)",
+                sql: @"
+                    INSERT INTO AspNetRoles(Id, ConcurrencyStamp, [Name], NormalizedName)
+                    VALUES(@Id, @ConcurrencyStamp, @Name, @NormalizedName)",
                 param: entity
             );
         }
@@ -57,7 +59,10 @@ namespace AspNetCoreIdentityExample.Data.Repositories
         public void Update(Role entity)
         {
             Execute(
-                sql: "UPDATE AspNetRoles SET ConcurrencyStamp = @ConcurrencyStamp, [Name] = @Name, NormalizedName = @NormalizedName WHERE Id = @Id",
+                sql: @"
+                    UPDATE AspNetRoles SET ConcurrencyStamp = @ConcurrencyStamp,
+                        [Name] = @Name, NormalizedName = @NormalizedName
+                    WHERE Id = @Id",
                 param: entity
             );
         }

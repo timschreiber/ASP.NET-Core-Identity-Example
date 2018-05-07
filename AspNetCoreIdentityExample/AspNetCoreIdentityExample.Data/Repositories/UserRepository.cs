@@ -24,8 +24,7 @@ namespace AspNetCoreIdentityExample.Data.Repositories
                     VALUES(@Id, @AccessFailedCount, @ConcurrencyStamp, @Email, @EmailConfirmed,
 	                    @LockoutEnabled, @LockoutEnd, @NormalizedEmail, @NormalizedUserName,
 	                    @PasswordHash, @PhoneNumber, @PhoneNumberConfirmed, @SecurityStamp,
-	                    @TwoFactorEnabled, @UserName)
-                ",
+	                    @TwoFactorEnabled, @UserName)",
                 param: entity
             );
         }
@@ -81,8 +80,7 @@ namespace AspNetCoreIdentityExample.Data.Repositories
 	                    PhoneNumber = @PhoneNumber, PhoneNumberConfirmed = @PhoneNumberConfirmed,
 	                    SecurityStamp = @SecurityStamp, TwoFactorEnabled = @TwoFactorEnabled,
 	                    UserName = @UserName
-                    WHERE Id = @Id
-                ",
+                    WHERE Id = @Id",
                 param: entity);
         }
     }

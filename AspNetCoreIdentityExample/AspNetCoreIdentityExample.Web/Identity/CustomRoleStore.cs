@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace AspNetCoreIdentityExample.Web.Identity
 {
     public class CustomRoleStore :
-        IRoleStore<CustomIdentityRole>,
-        IRoleClaimStore<CustomIdentityRole>
+        IRoleStore<IdentityRole>,
+        IRoleClaimStore<IdentityRole>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -21,8 +21,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
             _unitOfWork = unitOfWork;
         }
 
-        #region IRoleStore<CustomIdentityRole> Members
-        public Task<IdentityResult> CreateAsync(CustomIdentityRole role, CancellationToken cancellationToken)
+        #region IRoleStore<IdentityRole> Members
+        public Task<IdentityResult> CreateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             }
         }
 
-        public Task<IdentityResult> DeleteAsync(CustomIdentityRole role, CancellationToken cancellationToken)
+        public Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             }
         }
 
-        public Task<CustomIdentityRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        public Task<IdentityRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -81,7 +81,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(getIdentityRole(roleEntity));
         }
 
-        public Task<CustomIdentityRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public Task<IdentityRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -93,7 +93,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(getIdentityRole(roleEntity));
         }
 
-        public Task<string> GetNormalizedRoleNameAsync(CustomIdentityRole role, CancellationToken cancellationToken)
+        public Task<string> GetNormalizedRoleNameAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -104,7 +104,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(role.NormalizedName);
         }
 
-        public Task<string> GetRoleIdAsync(CustomIdentityRole role, CancellationToken cancellationToken)
+        public Task<string> GetRoleIdAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -115,7 +115,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(role.Id);
         }
 
-        public Task<string> GetRoleNameAsync(CustomIdentityRole role, CancellationToken cancellationToken)
+        public Task<string> GetRoleNameAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -126,7 +126,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(role.Name);
         }
 
-        public Task SetNormalizedRoleNameAsync(CustomIdentityRole role, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedRoleNameAsync(IdentityRole role, string normalizedName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -139,7 +139,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task SetRoleNameAsync(CustomIdentityRole role, string roleName, CancellationToken cancellationToken)
+        public Task SetRoleNameAsync(IdentityRole role, string roleName, CancellationToken cancellationToken)
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -152,7 +152,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task<IdentityResult> UpdateAsync(CustomIdentityRole role, CancellationToken cancellationToken)
+        public Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             try
             {
@@ -181,8 +181,8 @@ namespace AspNetCoreIdentityExample.Web.Identity
         }
         #endregion
 
-        #region IRoleClaimStore<CustomIdentityRole> Members
-        public Task<IList<Claim>> GetClaimsAsync(CustomIdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
+        #region IRoleClaimStore<IdentityRole> Members
+        public Task<IList<Claim>> GetClaimsAsync(IdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -195,7 +195,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.FromResult(result);
         }
 
-        public Task AddClaimAsync(CustomIdentityRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task AddClaimAsync(IdentityRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -219,7 +219,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
             return Task.CompletedTask;
         }
 
-        public Task RemoveClaimAsync(CustomIdentityRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task RemoveClaimAsync(IdentityRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken != null)
                 cancellationToken.ThrowIfCancellationRequested();
@@ -244,7 +244,7 @@ namespace AspNetCoreIdentityExample.Web.Identity
         #endregion
 
         #region Private Methods
-        private Role getRoleEntity(CustomIdentityRole value)
+        private Role getRoleEntity(IdentityRole value)
         {
             return value == null
                 ? default(Role)
@@ -257,11 +257,11 @@ namespace AspNetCoreIdentityExample.Web.Identity
                 };
         }
 
-        private CustomIdentityRole getIdentityRole(Role value)
+        private IdentityRole getIdentityRole(Role value)
         {
             return value == null
-                ? default(CustomIdentityRole)
-                : new CustomIdentityRole
+                ? default(IdentityRole)
+                : new IdentityRole
                 {
                     ConcurrencyStamp = value.ConcurrencyStamp,
                     Id = value.Id,

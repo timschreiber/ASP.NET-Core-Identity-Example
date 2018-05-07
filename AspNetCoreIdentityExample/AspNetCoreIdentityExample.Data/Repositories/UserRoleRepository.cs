@@ -18,8 +18,8 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             Execute(
                 sql: @"
                     INSERT INTO AspNetUserRoles(UserId, RoleId)
-                    SELECT TOP 1 @userId, Id FROM AspNetRoles WHERE NormalizedName = @roleName
-                ",
+                    SELECT TOP 1 @userId, Id FROM AspNetRoles
+                    WHERE NormalizedName = @roleName",
                 param: new { userId, roleName }
             );
         }
@@ -29,7 +29,8 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             return Query<string>(
                 sql: @"
                     SELECT r.[Name]
-                    FROM AspNetUserRoles ur INNER JOIN AspNetRoles r ON ur.RoleId = r.Id
+                    FROM AspNetUserRoles ur INNER JOIN
+                        AspNetRoles r ON ur.RoleId = r.Id
                     WHERE ur.UserId = @userId
                 ",
                 param: new { userId }
@@ -41,8 +42,7 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             return Query<User>(
                 sql: @"
                     SELECT u.*
-                    FROM 
-	                    AspNetUserRoles ur INNER JOIN
+                    FROM AspNetUserRoles ur INNER JOIN
 	                    AspNetRoles r ON ur.RoleId = r.Id INNER JOIN
 	                    AspNetUsers u ON ur.UserId = u.Id
                     WHERE r.NormalizedName = @roleName
@@ -55,7 +55,8 @@ namespace AspNetCoreIdentityExample.Data.Repositories
             Execute(
                 sql: @"
                     DELETE ur
-                    FROM AspNetUserRoles ur INNER JOIN AspNetRoles r ON ur.RoleId = r.Id
+                    FROM AspNetUserRoles ur INNER JOIN
+                        AspNetRoles r ON ur.RoleId = r.Id
                     WHERE r.NormalizedName = @roleName
                 ",
                 param: new { userId, roleName }
